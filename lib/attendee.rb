@@ -1,10 +1,11 @@
 require './lib/cleaner'
 
 class Attendee
-  attr_reader :first_name,:last_name,
-              :email_address,:homephone,
-              :street,:city,
-              :state,:zipcode
+  attr_accessor :regdate,
+                :first_name,:last_name,
+                :email_address,:homephone,
+                :street,:city,
+                :state,:zipcode
 
   def initialize(row)
     @regdate          = row[:regdate]

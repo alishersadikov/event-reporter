@@ -2,58 +2,33 @@ require './test/test_helper'
 require './lib/cleaner'
 
 class CleanerTest < Minitest::Test
-  def test_it_reads_from_csv_file
-    csv = Cleaner.new
-    assert_equal 1, csv.read_from_csv
+
+  def test_general_formatter_changes_to_lowercase
+    assert_equal "allison", Cleaner.general_formatter("Allison")
   end
 
-end
+  def test_general_formatter_returns_blank_for_nil_and_empty_string
+    assert_equal "blank", Cleaner.general_formatter(nil)
+    assert_equal "blank", Cleaner.general_formatter("")
+  end
 
-# def read_from_csv
-#   contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
-# end
-#
-# id = row[0]
-# name = row[:first_name]
-# zipcode = clean_zipcode(row[:zipcode])
-#
-# def clean_zipcode(zipcode)
-#   zipcode.to_s.rjust(5,"0")[0..4]
-# end
-#
-# attr_reader :regdate,
-#             :first_name,
-#             :last_name,
-#             :email,
-#             :phone,
-#             :street,
-#             :city,
-#             :state,
-#             :zip_code
-#
-# def initialize(attendees)
-#   @regdate          = data[:regdate]
-#   @first_name       = Cleaner.downcaser(data[:first_name])
-#   @last_name        = Cleaner.downcaser(data[:last_name])
-#   @email            = Cleaner.downcaser(data[:email_address])
-#   @phone            = Cleaner.format_phone_number(data[:homephone])
-#   @street           = Cleaner.downcaser(data[:street])
-#   @city             = Cleaner.downcaser(data[:city])
-#   @state            = Cleaner.format_state(data[:state])
-#   @zipcode          = Cleaner.format_zipcode(data[:zipcode])
-# end
-#
-# def open_file
-#
-# end
-# def initialize(filepath="event_attendees.csv")
-#   @attendees = open_file(filepath)
-# end
-#
-# def open_file
-#   fileepath = "event_attendees.csv"
-#   @attendees = open_file(filepath)
-#
-#   @contents = CSV.open(filepath, headers: true, header_converters: :symbol)
-#   @contents.map { |row| Attendee.new(row) }
-# end
+  def test_it_cleans_up_the_phone_number
+    assert_equal "4145205000", Cleaner.clean_phone("414-520-5000")
+    assert_equal "2023281000", Cleaner.clean_phone("(202) 328 1000")
+  end
+
+  def test_it_returns_zeros_if_phone_number_is_nil_or_empty_string
+    assert_equal "0000000000", Cleaner.clean_phone(nil)
+    assert_equal "0000000000", Cleaner.clean_phone("")
+  end
+
+  def test_it_cleans_zip_codes
+    assert_equal "07287", Cleaner.clean_zipcode("7287")
+    assert_equal "00924", Cleaner.clean_zipcode("924")
+  end
+
+  def test_it_returs_zeros_if_zip_code_is_nil_or_empty_string
+    assert_equal "00000", Cleaner.clean_zipcode(nil)
+    assert_equal "00000", Cleaner.clean_zipcode("")
+  end
+end

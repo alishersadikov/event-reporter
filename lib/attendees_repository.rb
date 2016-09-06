@@ -13,7 +13,11 @@ class AttendeesRepository
     contents.each { |row| @repo << Attendee.new(row) }
     return @repo
   end
-end 
+
+  def load_repo
+ 
+  end
+end
 
 
   # def open_file(filepath)

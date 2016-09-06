@@ -2,15 +2,21 @@ require './lib/messages'
 require './lib/attendees_repository'
 
 class CLI
-  attr_reader :printer, :load, :repository, :queue
+  attr_reader :messages, :load, :repository, :queue
 
   def initialize
     @messages = Messages.new
     @queue    = []
   end
 
-  def start
-    messages.welcome
+  def run
+    while still running
+      messages.welcome
+      #get response
+      #evaluate
+    end
+    #go to top of loop
+    #have condition that breaks loop
   end
 
   def get_command_input
