@@ -1,3 +1,5 @@
+require './lib/messages'
+
 module HTMLExporter
   require "./lib/attendee_data"
   extend self
@@ -7,7 +9,7 @@ module HTMLExporter
   def export_html(filename, queue)
     html_file = "#{filename.split(".")[0]}.html"
     if queue.empty?
-      puts "You need to populate your queue"
+      Messages.queue_empty
     else
       File.open(html_file,'w') { |file|  build_full_html(file, queue) }
     end

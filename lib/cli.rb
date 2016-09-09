@@ -4,13 +4,11 @@ require './lib/attendees_repository'
 require './lib/container'
 
 class CLI
-  attr_reader :attendees, :queue, :container,
-              :messages
+  attr_reader :attendees, :queue, :con
 
   def initialize
-    @messages = Messages.new
     @attendees = AttendeesRepository.new
-    @container = Container.new
+    @con = Container.new
   end
 
   def run
@@ -18,38 +16,40 @@ class CLI
     process_command(command)
   end
 
-
   def process_command(command)
-    return handle_load(command)       if command[0] == "load"
-    return handle_help(command)       if command[0] == "help"
-    return handle_find(command)       if command[0] == "find"
-    return container.process(command) if command[0] == "queue"
-    return abort                      if command[0] == "quit"
-    return messages.invalid_command
+    return con.load_repository(command)     if command[0] == "load"
+    return handle_help(command)             if command[0] == "help"
+    return con.search(command)              if command[0] == "find"
+    return handle_queue(command)            if command[0] == "queue"
+    return con.subtract(command)            if command[0] == "subtract"
+    return con.add(command)                 if command[0] == "add"
+    return abort                            if command[0] == "quit"
+    return Messages.invalid_command
   end
 
-  def handle_load(command)
-    messages.load_message
-    command[1].nil? ? attendees.build_repository : attendees.build_repository(command[1])
+  def handle_queue(command)
+    return con.handle_count                 if command       == ["queue", "count"]
+    return con.queue_clear                  if command       == ["queue", "clear"]
+    return con.queue_print                  if command       == ["queue", "print"]
+    return con.queue_print_by(command[3])   if command[0..2] == ["queue", "print", "by"]
+    return con.queue_district               if command       == ["queue", "district"]
+    return con.queue_save_to(command[3])    if command[0..2] == ["queue", "save", "to"]
+    return con.export_html(command[3])      if command[0..2] == ["queue", "export", "html"]
+    return Messages.invalid_command
   end
 
   def handle_help(command)
-    return messages.help if command[1].nil?
-    return messages.queue_count if command[1] == "queue" && command[2] == "count"
-    return messages.queue_clear if command[1] == "queue" && command[2] == "clear"
+    if command == ["help"]
+      Messages.help
+    elsif
+      Messages.help_hash.keys.include?(command.join(" ").upcase)
+      puts Messages.help_hash[command.join(" ").upcase]
+    else
+      Messages.invalid_command
+    end
   end
 
-  def handle_find(command)
-    criteria = command[2..4].join(" ")
-    container.queue = container.queue | attendees.find(command[1], criteria)
-  end
-
+  # def handle_load(command)
+  #   @container.load_repository(command)
+  # end
 end
-  private
-
-
-#   def save_queue(criteria)
-#     CSV.open(criteria, "wb") do |csv|
-#       csv << queue
-#     end
-#   end

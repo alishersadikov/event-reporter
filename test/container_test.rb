@@ -106,6 +106,16 @@ class ContainerTest < Minitest::Test
     refute_equal container.queue_print, container.queue_district
   end
 
+  def test_integration_with_attendee_data_and_district_switch
+    attendees = AttendeesRepository.new
+    container = Container.new
+    attendees.build_repository('event_attendees_short.csv')
+    container.queue = attendees.find("zipcode", "98122")
+    assert_equal "not pulled", container.queue_print.last.last
+    assert_equal "7",container.queue_district.last.last
+    assert_equal "not pulled", container.queue_print.last.last
+  end
+
   def test_it_saves_queue_to_specified_destination
     attendees = AttendeesRepository.new
     container = Container.new

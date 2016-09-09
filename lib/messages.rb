@@ -1,64 +1,60 @@
-class Messages
+module Messages
+  extend self
 
   def welcome
-    puts "Welcome to Event Reporter!"
-    puts "Enter your command when ready, or type 'help' for instructions:"
+    puts "_______________________________________________________________\n\n"
+    puts "--------------- WELCOME TO EVENT REPORTER !!! -----------------\n"
+    puts "_______________________________________________________________\n\n"
+    puts "ENTER COMMAND WHEN READY, OR TYPE 'HELP' FOR INSTRUCTIONS:"
   end
 
   def invalid_command
-    puts "Invalid input. Type your command again:"
+    puts "INVALID INPUT. TYPE 'HELP' FOR AVAILABLE COMMANDS OR TYPE COMMAND:"
+  end
+
+  def queue_empty
+    puts "NO DATA TO DISPLAY: YOUR QUEUE IS NOT POPULATED!"
   end
 
   def load_message
-    puts "The repository has loaded."
+    puts "THE REPOSITORY HAS LOADED AND IS READY TO USE !"
   end
 
   def queue_count(queue_count)
-    puts "--- #{queue_count} ---- entries in the queue"
+    puts "ENTRIES IN THE QUEUE: - #{queue_count} -"
   end
 
   def help
-    puts "The following commands are available: \n'load'
-'queue count'\n'queue clear'\n'queue district'\n'queue print'
-'queue save'\nqueue print by attribute'\n'queue save to file'
-'queue export html'\n'find by atribute and criteria'."
+    puts "THE FOLLOWING COMMANDS ARE AVAILABLE:\n\n"
+
+    commands = ["load <filename>",
+                "find by <attribute> <criteria>",
+                "queue count",
+                "queue clear",
+                "queue district",
+                "queue print",
+                "queue print by <attribute>",
+                "queue save to <filename>",
+                "queue export html <filename>",
+                "subtract <attribute> <criteria>",
+                "add <attribute> <criteria>",
+                "find by <attribute> <criteria> and <attribute> <criteria>"]
+
+    commands.each { |command|  puts "------ #{command.upcase}\n\n" }
+    puts "------------------------- END OF LIST --------------------------\n"
   end
 
-  def help_queue_count
-    puts "Outputs how many records are in the current queue."
+  def help_hash
+    { "HELP LOAD" => "WILL LOAD THE REPOSITORY BASED ON THE GIVEN FILE OR THE DEFAULT FILE IF NOT SPECIFIED",
+      "HELP FIND" => "SEARCHES THE REPOSITORY BY GIVEN ATTRIBUTE AND CRITERIA",
+      "HELP QUEUE COUNT" => "OUTPUTS THE NUMBER OF RECORDS IN THE QUEUE",
+      "HELP QUEUE CLEAR" => "EMPTIES THE QUEUE",
+      "HELP QUEUE DISTRICT" => "IF ENTRIES ARE LESS THAN 10, WILL USE THE SUNLIGHT API TO GET CONGRESSIONAL DISTRICT NUMBERS",
+      "HELP QUEUE PRINT" => "PRINTS THE QUEUE IN A TABLE WITH HEADERS",
+      "HELP QUEUE PRINT BY" => "PRINTS THE SORTED QUEUE BY GIVEN ATTRIBUTE",
+      "HELP QUEUE SAVE TO" => "SAVES THE QUEUE TO SPECIFIED FILE",
+      "HELP QUEUE EXPORT HTML" => "EXPORTS THE QUEUE IN HTML FORMAT",
+      "HELP SUBTRACT" => "REMOVES THE SPECIFIED ATTENDEE RECORDS FROM THE QUEUE",
+      "HELP ADD" => "ADDS THE SPECIFIED ATTENDEE RECORDS TO THE QUEUE" }
   end
-
-  def queue_clear
-    puts "Empties the queue"
-  end
-
-  def queue_district
-    puts "If there are less than 10 entries in the queue, this command will use the Sunlight API to get Congressional District information for each entry."
-  end
-
-  def queue_print
-    puts "Print out a tab-delimited data table with a header row."
-  end
-
-  def find_success
-    puts "The following data was found:"
-  end
-
-  def find_fail
-    puts "No data found with given attribute and criteria."
-  end
-
-  def table_header
-
-  end
-
-  def format_attendee_table
-  end
-
-  def load_error_message
-  end
-
-  def help_instructions
-  end
-
 end

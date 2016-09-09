@@ -1,9 +1,8 @@
 Dir["./lib/*.rb"].each { |file| require "#{file}" }
 
-messages = Messages.new
 cli = CLI.new
 
-messages.welcome
+Messages.welcome
 
 loop do
   cli.run

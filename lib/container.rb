@@ -1,47 +1,92 @@
 require 'terminal-table'
-require './lib/messages'
+require './lib/Messages'
 require './lib/html_exporter'
 require './lib/attendee_data'
+require './lib/attendees_repository'
 
 class Container
-  attr_accessor :queue, :messages
+  attr_accessor :queue, :attendees
   HEADER_ROW = ["LAST NAME","FIRST NAME","EMAIL","ZIPCODE","CITY","STATE","ADDRESS","PHONE","DISTRICT"]
 
   def initialize
     @queue = []
-    @messages = Messages.new
+    @attendees = AttendeesRepository.new
   end
 
-  def process(command)
-    return handle_count                 if command[1] == "count"
-    return @queue = []                  if command[1] == "clear"
-    return queue_print                  if command[1] == "print" && command[2].nil?
-    return queue_print_by(command[3])   if command[1] == "print" && command[2] == "by"
-    return queue_district               if command[1] == "district"
-    return queue_save_to(command[3])    if command[1] == "save"
-    return export_html(command[3])      if command[1] == "export" && command [2] == "html"
+  # def process(command)
+  #   return handle_count                 if command[1] == "count"
+  #   return queue_clear                  if command[1] == "clear"
+  #   return queue_print                  if command[1] == "print" && command[2].nil?
+  #   return queue_print_by(command[3])   if command[1] == "print" && command[2] == "by"
+  #   return queue_district               if command[1] == "district"
+  #   return queue_save_to(command[3])    if command[1] == "save"
+  #   return export_html(command[3])      if command[1] == "export" && command [2] == "html"
+  # end
+
+  def load_repository(command)
+    Messages.load_message
+    command[1].nil? ? attendees.build_repository : attendees.build_repository(command[1])
+  end
+
+  def queue_clear
+    @queue = []
   end
 
   def handle_count
-    messages.queue_count(queue.count)
+    Messages.queue_count(queue.count)
     queue.count
   end
 
+  def search(command)
+    case command.include? "and"
+    when false
+      queue_clear
+      criteria = command[2..4].join(" ")
+      @queue = attendees.find(attendees.repo, command[1], criteria)
+    else
+      improved_find(command)
+    end
+  end
+
+  def improved_find(command)
+    separated = command.join(" ").split("and")
+    set_1 = separated[0].split[-2..-1]
+    set_2 = separated[1].split
+    @queue = attendees.find(attendees.repo, set_1[0], set_1[1])
+    @queue = attendees.find(@queue, set_2[0], set_2[1])
+  end
+
+  def subtract(command)
+    @queue = @queue - attendees.find(@queue, command[1], command[2])
+  end
+
+  def add(command)
+    @queue = @queue + attendees.find(attendees.repo, command[1], command[2])
+  end
+
   def queue_print
-    rows = @queue.map { |attendee|  AttendeeData.data_from_attendee(attendee) }
-    print_terminal_table(rows)
-    return rows
+    case @queue.empty?
+    when true
+      Messages.queue_empty
+    else
+      rows = @queue.map { |attendee|  AttendeeData.data_from_attendee(attendee) }
+      print_terminal_table(rows)
+      return rows
+    end
   end
 
   def queue_print_by(attribute)
-    @queue = @queue.sort_by { |attendee|  attendee.send(attribute) }
-    rows   = @queue.map { |attendee|  AttendeeData.data_from_attendee(attendee) }
-    print_terminal_table(rows)
-    return rows
+    case @queue.empty?
+    when true
+      Messages.queue_empty
+    else
+      @queue = @queue.sort_by { |attendee|  attendee.send(attribute) }
+      queue_print
+    end
   end
 
   def print_terminal_table(rows)
-    table = Terminal::Table.new :headings => HEADER_ROW, :rows => rows
+    table = Terminal::Table.new :title => "--- CURRENT QUEUE ---", :headings => HEADER_ROW, :rows => rows
     puts table
   end
 

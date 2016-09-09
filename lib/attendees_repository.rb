@@ -14,8 +14,8 @@ class AttendeesRepository
     return @repo
   end
 
-  def find(attribute, criteria)
-    search_query = @repo.find_all { |attendee|  attendee.send(attribute) == criteria }
+  def find(data, attribute, criteria)
+    search_query = data.find_all { |attendee|  attendee.send(attribute) == criteria }
     return search_query
   end
 end
