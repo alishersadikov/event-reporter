@@ -1,79 +1,55 @@
+require 'terminal-table'
 require './lib/messages'
 require './lib/attendees_repository'
+require './lib/container'
 
 class CLI
-  attr_reader :messages, :load, :repository, :queue
+  attr_reader :attendees, :queue, :container,
+              :messages
 
   def initialize
     @messages = Messages.new
-    @queue    = []
+    @attendees = AttendeesRepository.new
+    @container = Container.new
   end
 
   def run
-    while still running
-      messages.welcome
-      #get response
-      #evaluate
-    end
-    #go to top of loop
-    #have condition that breaks loop
+    command = gets.chomp.downcase.split(" ")
+    process_command(command)
   end
 
-  def get_command_input
-    messages.prompt_for_input
-    input           = gets.chomp.downcase.split(" ")
-    command         = input[0]
-    option          = input[1]
-    criteria        = input[2]
-    case command
-    when "load"
-      message.load_message
-      @repo = AttendeesRepository.new.build_repository('event_attendees.csv')
-    when "help" then messages.help(input[1], input[2])
-    when 'find' then validate_find_search(option, criteria)
-    when 'queue' then queue_interaction(option, criteria)
-    end
-    get_user_command
+
+  def process_command(command)
+    return handle_load(command)       if command[0] == "load"
+    return handle_help(command)       if command[0] == "help"
+    return handle_find(command)       if command[0] == "find"
+    return container.process(command) if command[0] == "queue"
+    return abort                      if command[0] == "quit"
+    return messages.invalid_command
   end
 
-  def queue_interaction(option, criteria)
-    case option
-    when "count" then count_queue
-    when "clear" then clear_queue
-    when "save"  then save_queue(criteria)
-    when "print" then print_queue
-    end
+  def handle_load(command)
+    messages.load_message
+    command[1].nil? ? attendees.build_repository : attendees.build_repository(command[1])
   end
 
+  def handle_help(command)
+    return messages.help if command[1].nil?
+    return messages.queue_count if command[1] == "queue" && command[2] == "count"
+    return messages.queue_clear if command[1] == "queue" && command[2] == "clear"
+  end
+
+  def handle_find(command)
+    criteria = command[2..4].join(" ")
+    container.queue = container.queue | attendees.find(command[1], criteria)
+  end
+
+end
   private
 
-  def count_queue
-    p queue.flatten.count
-  end
 
-  def clear_queue
-    @queue = []
-  end
-
-  def save_queue(criteria)
-    CSV.open(criteria, "wb") do |csv|
-      csv << queue
-    end
-  end
-
-  def print_queue
-    queue = @queue.flatten
-    messages.table_header
-    messages.format_attendee_table(queue)
-  end
-
-  def validate_find_search(option, criteria)
-    if repository.nil?
-      message.load_error_message
-    elsif criteria.nil?
-      message.help_instructions
-    else
-      @queue << repository.find_by(option, criteria)
-    end
-  end
-end
+#   def save_queue(criteria)
+#     CSV.open(criteria, "wb") do |csv|
+#       csv << queue
+#     end
+#   end

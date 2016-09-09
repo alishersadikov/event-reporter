@@ -1,5 +1,5 @@
 require './test/test_helper'
-require './lib/sunlight_file'
+require './lib/sunlight'
 
 class SunglightTest < Minitest::Test
   def test_it_returns_districts_from_zipcodes
