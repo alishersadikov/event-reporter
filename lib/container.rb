@@ -13,16 +13,6 @@ class Container
     @attendees = AttendeesRepository.new
   end
 
-  # def process(command)
-  #   return handle_count                 if command[1] == "count"
-  #   return queue_clear                  if command[1] == "clear"
-  #   return queue_print                  if command[1] == "print" && command[2].nil?
-  #   return queue_print_by(command[3])   if command[1] == "print" && command[2] == "by"
-  #   return queue_district               if command[1] == "district"
-  #   return queue_save_to(command[3])    if command[1] == "save"
-  #   return export_html(command[3])      if command[1] == "export" && command [2] == "html"
-  # end
-
   def load_repository(command)
     Messages.load_message
     command[1].nil? ? attendees.build_repository : attendees.build_repository(command[1])
@@ -56,13 +46,6 @@ class Container
     @queue = attendees.find(@queue, set_2[0], set_2[1])
   end
 
-  def subtract(command)
-    @queue = @queue - attendees.find(@queue, command[1], command[2])
-  end
-
-  def add(command)
-    @queue = @queue + attendees.find(attendees.repo, command[1], command[2])
-  end
 
   def queue_print
     case @queue.empty?
@@ -112,5 +95,13 @@ class Container
 
   def export_html(filename)
     HTMLExporter.export_html(filename, @queue)
+  end
+
+  def subtract(command)
+    @queue = @queue - attendees.find(@queue, command[1], command[2])
+  end
+
+  def add(command)
+    @queue = @queue + attendees.find(attendees.repo, command[1], command[2])
   end
 end

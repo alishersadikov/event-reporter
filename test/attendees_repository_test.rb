@@ -96,9 +96,9 @@ class AttendeesRepositoryTest < Minitest::Test
   def test_it_finds_attendees_by_given_attribute_and_criteria
     attendees = AttendeesRepository.new
     attendees.build_repository('event_attendees_short.csv')
-    assert_equal 1, attendees.find("first_name", "laura").count
-    assert_equal 1, attendees.find("city", "vancouver").count
-    assert_equal 2, attendees.find("zipcode", "98122").count
-    assert_equal 1, attendees.find("email_address", "cnroh@jumpstartlab.com").count
+    assert_equal 1, attendees.find(attendees.repo, "first_name", "laura").count
+    assert_equal 1, attendees.find(attendees.repo, "city", "vancouver").count
+    assert_equal 2, attendees.find(attendees.repo, "zipcode", "98122").count
+    assert_equal 1, attendees.find(attendees.repo, "email_address", "cnroh@jumpstartlab.com").count
   end
 end
