@@ -12,7 +12,7 @@ class AttendeesRepositoryTest < Minitest::Test
     attendees = AttendeesRepository.new
     attendees.build_repository('event_attendees_short.csv')
     assert attendees.repo
-    refute_equal 0, attendees.repo
+    refute_equal 0, attendees.repo.size
   end
 
   def test_it_builds_repository_as_an_array_of_attendees
